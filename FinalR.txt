@@ -1,0 +1,212 @@
+//PIE CHART
+png(file="pie.png")  //image
+
+x <- c(mean(air$Ozone),mean(air$Solar.R),mean(air$Wind),mean(air$Temp),mean(air$Month),mean(air$Day))
+lab <- c("Ozone","Solar.R","Wind","Temp","Month","Day")
+pie(x,main="Air Quality",col=rainbow(length(x)),lab)
+
+dev.off()       //saving
+
+//BAR PLOT
+barplot(x,main="Air Quality",xlab="Range",ylab="Frequency",names.arg=c("Ozone","Solar","Wind","Temp","Month","Day"),border="brown",density=c(10,10,10,10,10,10),col=rainbow(6))
+
+//LINE CHART
+png(file="line1.png")
+> plot(x ,xlab="Range",ylab="Frequency",type = "o" , main = "Air Quality" , col = "blue")
+> dev.off()
+
+//HISTOGRAM
+hist(x , main = "Air Quality")
+
+//SCATTER PLOT
+plot(x, main="AirQuality", xlab="Range", ylab="Frequency ", pch=21) 
+
+//BOXPLOT
+boxplot(x,las=2)
+//OR
+boxplot(x,  xlab = "Range",ylab ="Frequency", main = "AirQuality")
+
+
+//DATA MODELLING
+> air<-airquality
+
+> air$Ozone=ifelse(is.na(air$Ozone), median(air$Ozone, na.rm = TRUE), air$Ozone)
+> air$Solar.R=ifelse(is.na(air$Solar.R), median(air$Solar.R, na.rm = TRUE), air$Solar.R)
+> summary(air)
+     Ozone           Solar.R           Wind             Temp           Month            Day      
+ Min.   :  1.00   Min.   :  7.0   Min.   : 1.700   Min.   :56.00   Min.   :5.000   Min.   : 1.0  
+ 1st Qu.: 21.00   1st Qu.:120.0   1st Qu.: 7.400   1st Qu.:72.00   1st Qu.:6.000   1st Qu.: 8.0  
+ Median : 31.50   Median :205.0   Median : 9.700   Median :79.00   Median :7.000   Median :16.0  
+ Mean   : 39.56   Mean   :186.8   Mean   : 9.958   Mean   :77.88   Mean   :6.993   Mean   :15.8  
+ 3rd Qu.: 46.00   3rd Qu.:256.0   3rd Qu.:11.500   3rd Qu.:85.00   3rd Qu.:8.000   3rd Qu.:23.0  
+ Max.   :168.00   Max.   :334.0   Max.   :20.700   Max.   :97.00   Max.   :9.000   Max.   :31.0  
+> normalize<-function(x) {return((x-min(x))/(max(x)-min(x)))}
+> air<-normalize(air)
+> summary(air)
+     Ozone            Solar.R             Wind               Temp            Month              Day         
+ Min.   :0.00000   Min.   :0.01802   Min.   :0.002102   Min.   :0.1652   Min.   :0.01201   Min.   :0.00000  
+ 1st Qu.:0.06006   1st Qu.:0.35736   1st Qu.:0.019219   1st Qu.:0.2132   1st Qu.:0.01502   1st Qu.:0.02102  
+ Median :0.09159   Median :0.61261   Median :0.026126   Median :0.2342   Median :0.01802   Median :0.04505  
+ Mean   :0.11579   Mean   :0.55797   Mean   :0.026899   Mean   :0.2309   Mean   :0.01800   Mean   :0.04446  
+ 3rd Qu.:0.13514   3rd Qu.:0.76577   3rd Qu.:0.031532   3rd Qu.:0.2523   3rd Qu.:0.02102   3rd Qu.:0.06607  
+ Max.   :0.50150   Max.   :1.00000   Max.   :0.059159   Max.   :0.2883   Max.   :0.02402   Max.   :0.09009  
+> str(air)
+'data.frame':	153 obs. of  6 variables:
+ $ Ozone  : num  0.1201 0.1051 0.033 0.0511 0.0916 ...
+ $ Solar.R: num  0.568 0.351 0.444 0.937 0.613 ...
+ $ Wind   : num  0.0192 0.021 0.0348 0.0315 0.0399 ...
+ $ Temp   : num  0.198 0.213 0.219 0.183 0.165 ...
+ $ Month  : num  0.012 0.012 0.012 0.012 0.012 ...
+ $ Day    : num  0 0.003 0.00601 0.00901 0.01201 ...
+> Y<-air[,"Ozone"]
+> X<-air[,"Solar.R"]
+> model1<-lm(Y~X)
+> model1
+
+Call:
+lm(formula = Y ~ X)
+
+Coefficients:
+(Intercept)            X  
+    0.06139      0.09750  
+
+> plot(Y~X)
+> abline(model1,col="blue",lwd=3)
+> Y<-air[,"Ozone"]
+> X<-air[,"Wind"]
+abline(model2,col="blue",lwd=3)
+> 
+> model2
+
+Call:
+lm(formula = Y ~ X)
+
+Coefficients:
+(Intercept)            X  
+     0.2338      -4.3866  
+
+> p1<-predict(model1, data.frame("X"=10))
+> p1
+      1 
+1.03637 
+>p2<-predict(model1, data.frame("X"=10))
+> p2
+        1 
+-21.69937 
+
+
+fb <- read.csv("/home/dell/Downloads/dataset_Facebook.csv")
+       > View(fb)
+
+1) Create data subsets using condition likes>50
+> fbsubset <- subset(fb,like>50)
+       > View(fbsubset)
+
+2) Create data subsets to retrieve any four columns from the dataset
+fbsubset2 <-subset(fb,select = c('type','category','postmonth','postweekday'))
+       View(fbsubset2)
+
+2) Merge Data using merge, rbind and cbind functions
+merge(fbsubset,fbsubset2)
+      > fbsubset7 <- subset(fb,select = c('type','category','like'),like>1000)
+	> View(fbsubset7)
+	> fbsubset8 <- subset(fb,select = c('type','category','like'),like<1)
+	> View(fbsubset8)
+	> rbind1 <- rbind(fbsubset7,fbsubset8)
+	> View(rbind1)
+
+	> fbsubset7 <- subset(fb,select = c('type','category','like'),like>1372)
+	> fbsubset8 <- subset(fb,select = c('type','category','like'),like<1)
+	> cbind1 <- cbind(fbsubset7,fbsubset8)
+	> View(cbind1)
+
+
+3) Sort Data in descending order for column 'likes'
+fbdesc <-subset(fb,select = c('like'))
+       > fbdesc[order(-fb$like),]
+
+4) Transposing Data
+transpose<-t(fbsubset)
+      > View(transpose)
+
+5) Melting Data
+library(reshape)
+       > mdata <- melt(fbsubset2 , id=c('type','category'))
+       > View(mdata)
+
+
+6) Casting data
+cast(mdata, type~variable , mean)
+View(cast)
+cast1 <- cast(mdata, type~variable , sum)
+> View(cast1)
+
+
+
+8. Perform the following operations using R/Python on the Facebook metrics data sets
+1) Create data subsets using condition comments>20
+> fbsubset <- subset(fb,comments>20)
+> View(fbsubset)
+
+2) Create data subsets to retrieve any four columns from the dataset
+fbsubset2 <-subset(fb,select = c('type','category','postmonth','postweekday'))
+View(fbsubset2)
+
+2) Merge Data using merge, rbind and cbind functions
+merge(fbsubset,fbsubset2)
+      > fbsubset7 <- subset(fb,select = c('type','category','like'),like>1000)
+	> View(fbsubset7)
+	> fbsubset8 <- subset(fb,select = c('type','category','like'),like<1)
+	> View(fbsubset8)
+	> rbind1 <- rbind(fbsubset7,fbsubset8)
+	> View(rbind1)
+
+	> fbsubset7 <- subset(fb,select = c('type','category','like'),like>1372)
+	> fbsubset8 <- subset(fb,select = c('type','category','like'),like<1)
+	> cbind1 <- cbind(fbsubset7,fbsubset8)
+       > View(cbind1)
+
+
+3) Sort Data in ascending order for column 'comments'
+fbasc <-subset(fb,select = c('comments'))
+> fbasc[order(fb$comments),]
+
+4) Transposing Data
+transpose<-t(fbsubset)
+View(transpose)
+
+
+5) Melting Data 
+library(reshape)
+       > mdata <- melt(fbsubset2 , id=c('type','category'))
+       > View(mdata)
+
+1) Data cleaning
+
+
+	> summary(airquality)           
+	> air <- airquality
+	> air$Ozone <- ifelse(is.na(air$Ozone),median(air$Ozone,na.rm = TRUE),air$Ozone)
+	> summary(air)
+
+
+3) Data transformation
+> head(air)
+		> air$Solar.Danger = air$Solar.R
+		> air$Solar.Danger = air$Solar.R > 100
+		> head(air)
+
+		> brks <- c(0,50,100,150,200,250,300,350)
+		> air$Solar.R <- cut(air$Solar.R,breaks = brks,include.lowest = TRUE)
+		> head(air)
+
+		> air1 = air
+		> air1$Month = gsub(5,"May",air1$Month)
+		> air1$Month = gsub(6,"June",air1$Month)
+		> head(air1)
+4) Error correcting
+		> mean(airquality$Ozone)
+		> mean(airquality$Ozone,na.rm = TRUE)
+		> max(airquality$Ozone)
+		> max(airquality$Ozone,na.rm = TRUE)
+

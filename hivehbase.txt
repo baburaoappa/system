@@ -1,0 +1,418 @@
+1. Write an application using HBase and HiveQL for flight information system which will include
+
+=>start-dfs.sh
+=>start-yarn.sh
+=>jps
+17216 ResourceManager
+16673 NameNode
+15681 org.eclipse.equinox.launcher_1.3.0.dist.jar
+17346 NodeManager
+16804 DataNode
+17045 SecondaryNameNode
+17670 Jps
+=>start-hbase.sh
+=>jps
+17216 ResourceManager
+16673 NameNode
+15681 org.eclipse.equinox.launcher_1.3.0.dist.jar
+17346 NodeManager
+18275 Jps
+16804 DataNode
+17045 SecondaryNameNode
+18022 HMaster
+17951 HQuorumPeer
+18159 HregionServer
+=>hbase shell
+
+1) Creating Database tables
+
+hbase(main):001:0> create 'flight','fno','origin','dest'
+0 row(s) in 2.7930 seconds
+
+=> Hbase::Table - flight
+
+2) Dropping Database tables
+
+hbase(main):023:0> create 'student','rno','name'
+0 row(s) in 2.3110 seconds
+
+=> Hbase::Table - student
+hbase(main):024:0> list
+TABLE                                                                                                                                          
+Airlines                                                                                                                                       
+CustomerInformation                                                                                                                            
+db1                                                                                                                                            
+employee                                                                                                                                       
+flight                                                                                                                                         
+mytable                                                                                                                                        
+student                                                                                                                                        
+7 row(s) in 0.0190 seconds
+
+=> ["Airlines", "CustomerInformation", "db1", "employee", "flight", "mytable", "student"]
+hbase(main):005:0> drop 'student'
+
+ERROR: Table student is enabled. Disable it first.
+
+Here is some help for this command:
+Drop the named table. Table must first be disabled:
+  hbase> drop 't1'
+  hbase> drop 'ns1:t1'
+
+hbase(main):025:0> is_disabled 'student'
+false                                                                                                                                          
+0 row(s) in 0.0320 seconds
+
+hbase(main):026:0> disable 'student'
+0 row(s) in 2.3420 seconds
+
+hbase(main):027:0> exists 'student'
+Table student does exist                                                                                                                       
+0 row(s) in 0.0120 seconds
+
+hbase(main):028:0> drop 'student'
+0 row(s) in 1.3270 seconds
+
+hbase(main):029:0> list
+TABLE                                                                                                                                          
+Airlines                                                                                                                                       
+CustomerInformation                                                                                                                            
+db1                                                                                                                                            
+employee                                                                                                                                       
+flight                                                                                                                                         
+mytable                                                                                                                                        
+6 row(s) in 0.0480 seconds
+
+=> ["Airlines", "CustomerInformation", "db1", "employee", "flight", "mytable"]
+
+
+
+*) Inserting values
+
+hbase(main):034:0> put 'flight','1','fno','f1'
+0 row(s) in 0.1230 seconds
+
+hbase(main):035:0> put 'flight','1','origin:code','c1'
+0 row(s) in 0.0100 seconds
+
+hbase(main):036:0> put 'flight','1','origin:name','mumbai'
+0 row(s) in 0.0200 seconds
+
+hbase(main):037:0> put 'flight','1','dest','pune'
+0 row(s) in 0.0200 seconds
+
+hbase(main):038:0> put 'flight','2','fno','f2'
+0 row(s) in 0.0200 seconds
+
+hbase(main):039:0> put 'flight','2','origin:code','c2'
+0 row(s) in 0.0230 seconds
+
+hbase(main):040:0> put 'flight','2','origin:name','pune'
+0 row(s) in 0.0580 seconds
+
+hbase(main):041:0> put 'flight','2','dest','mumbai'
+0 row(s) in 0.0150 seconds
+
+hbase(main):042:0> scan 'flight'
+ROW                                  COLUMN+CELL                                                                                               
+ 1                                   column=dest:, timestamp=1523694892610, value=pune                                                         
+ 1                                   column=fno:, timestamp=1523694870609, value=f1                                                            
+ 1                                   column=origin:code, timestamp=1523694878219, value=c1                                                     
+ 1                                   column=origin:name, timestamp=1523694884852, value=mumbai                                                 
+ 2                                   column=dest:, timestamp=1523694920082, value=mumbai                                                       
+ 2                                   column=fno:, timestamp=1523694897959, value=f2                                                            
+ 2                                   column=origin:code, timestamp=1523694905108, value=c2                                                     
+ 2                                   column=origin:name, timestamp=1523694913996, value=pune                                                   
+2 row(s) in 0.0770 seconds
+
+*) read row
+
+hbase(main):043:0> get 'flight','1'
+COLUMN                               CELL                                                                                                      
+ dest:                               timestamp=1523694892610, value=pune                                                                       
+ fno:                                timestamp=1523694870609, value=f1                                                                         
+ origin:code                         timestamp=1523694878219, value=c1                                                                         
+ origin:name                         timestamp=1523694884852, value=mumbai                                                                     
+4 row(s) in 0.0510 seconds
+
+*)deletion
+
+hbase(main):044:0> delete 'flight','2','origin:name'
+0 row(s) in 0.0480 seconds
+
+hbase(main):045:0> scan 'flight'
+ROW                                  COLUMN+CELL                                                                                               
+ 1                                   column=dest:, timestamp=1523694892610, value=pune                                                         
+ 1                                   column=fno:, timestamp=1523694870609, value=f1                                                            
+ 1                                   column=origin:code, timestamp=1523694878219, value=c1                                                     
+ 1                                   column=origin:name, timestamp=1523694884852, value=mumbai                                                 
+ 2                                   column=dest:, timestamp=1523694920082, value=mumbai                                                       
+ 2                                   column=fno:, timestamp=1523694897959, value=f2                                                            
+ 2                                   column=origin:code, timestamp=1523694905108, value=c2                                                     
+2 row(s) in 0.0370 seconds
+
+*) updating value
+
+
+hbase(main):046:0> put 'flight','2','dest','banglore'
+0 row(s) in 0.0230 seconds
+
+hbase(main):047:0> scan 'flight'
+ROW                                  COLUMN+CELL                                                                                               
+ 1                                   column=dest:, timestamp=1523694892610, value=pune                                                         
+ 1                                   column=fno:, timestamp=1523694870609, value=f1                                                            
+ 1                                   column=origin:code, timestamp=1523694878219, value=c1                                                     
+ 1                                   column=origin:name, timestamp=1523694884852, value=mumbai                                                 
+ 2                                   column=dest:, timestamp=1523695361684, value=banglore                                                     
+ 2                                   column=fno:, timestamp=1523694897959, value=f2                                                            
+ 2                                   column=origin:code, timestamp=1523694905108, value=c2                                                     
+2 row(s) in 0.0370 seconds
+
+3) Altering Database tables
+
+hbase(main):048:0> alter 'flight','date'
+Updating all regions with the new schema...
+0/1 regions updated.
+0/1 regions updated.
+1/1 regions updated.
+Done.
+0 row(s) in 4.6930 seconds
+
+hbase(main):049:0> put 'flight','2','date','1 jan 2018'
+0 row(s) in 0.0200 seconds
+
+hbase(main):050:0> scan 'flight'
+ROW                                  COLUMN+CELL                                                                                               
+ 1                                   column=dest:, timestamp=1523694892610, value=pune                                                         
+ 1                                   column=fno:, timestamp=1523694870609, value=f1                                                            
+ 1                                   column=origin:code, timestamp=1523694878219, value=c1                                                     
+ 1                                   column=origin:name, timestamp=1523694884852, value=mumbai                                                 
+ 2                                   column=date:, timestamp=1523695461615, value=1 jan 2018                                                   
+ 2                                   column=dest:, timestamp=1523695361684, value=banglore                                                     
+ 2                                   column=fno:, timestamp=1523694897959, value=f2                                                            
+ 2                                   column=origin:code, timestamp=1523694905108, value=c2                                                     
+2 row(s) in 0.0750 seconds
+
+hbase(main):051:0> put 'flight','2','time','12:00'
+
+ERROR: Unknown column family! Valid column names: date:*, dest:*, fno:*, origin:*
+
+*)Adding customer column family
+
+hbase(main):052:0> scan 'flight'
+ROW                                  COLUMN+CELL                                                                                               
+ 1                                   column=dest:, timestamp=1523694892610, value=pune                                                         
+ 1                                   column=fno:, timestamp=1523694870609, value=f1                                                            
+ 1                                   column=origin:code, timestamp=1523694878219, value=c1                                                     
+ 1                                   column=origin:name, timestamp=1523694884852, value=mumbai                                                 
+ 2                                   column=date:, timestamp=1523695461615, value=1 jan 2018                                                   
+ 2                                   column=dest:, timestamp=1523695361684, value=banglore                                                     
+ 2                                   column=fno:, timestamp=1523694897959, value=f2                                                            
+ 2                                   column=origin:code, timestamp=1523694905108, value=c2                                                     
+2 row(s) in 0.0410 seconds
+
+hbase(main):053:0> alter 'flight','customer'
+Updating all regions with the new schema...
+0/1 regions updated.
+1/1 regions updated.
+Done.
+0 row(s) in 3.4520 seconds
+
+hbase(main):054:0> put 'flight','2','customer:fname','kajal'
+0 row(s) in 0.0170 seconds
+
+hbase(main):055:0> put 'flight','2','customer:lname','mapare'
+0 row(s) in 0.0210 seconds
+
+hbase(main):056:0> put 'flight','1','customer:fname','abc'
+0 row(s) in 0.0210 seconds
+
+hbase(main):057:0> put 'flight','1','customer:lname','xyz'
+0 row(s) in 0.0220 seconds
+
+hbase(main):058:0> scan 'flight'
+ROW                                  COLUMN+CELL                                                                                               
+ 1                                   column=customer:fname, timestamp=1523695738909, value=abc                                                 
+ 1                                   column=customer:lname, timestamp=1523695744989, value=xyz                                                 
+ 1                                   column=dest:, timestamp=1523694892610, value=pune                                                         
+ 1                                   column=fno:, timestamp=1523694870609, value=f1                                                            
+ 1                                   column=origin:code, timestamp=1523694878219, value=c1                                                     
+ 1                                   column=origin:name, timestamp=1523694884852, value=mumbai                                                 
+ 2                                   column=customer:fname, timestamp=1523695722679, value=kajal                                               
+ 2                                   column=customer:lname, timestamp=1523695730154, value=mapare                                              
+ 2                                   column=date:, timestamp=1523695461615, value=1 jan 2018                                                   
+ 2                                   column=dest:, timestamp=1523695361684, value=banglore                                                     
+ 2                                   column=fno:, timestamp=1523694897959, value=f2                                                            
+ 2                                   column=origin:code, timestamp=1523694905108, value=c2                                                     
+2 row(s) in 0.0690 seconds
+
+4) Creating an external Hive table to connect to the HBase for Flight Information Table
+
+=>open new terminal
+=> cd /usr/local/hive/bin
+=> ./hive
+
+hive> create EXTERNAL TABLE integration_flight(key INT,origin map<INT,STRING>,customer map<STRING,STRING>)
+    > STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+    > WITH SERDEPROPERTIES("hbase.columns.mapping" = ":key,origin:,customer:")
+    > TBLPROPERTIES("hbase.table.name"="flight");
+OK
+Time taken: 4.47 seconds
+hive> select * from integration_flight;
+OK
+1	{null:"mumbai"}	{"fname":"abc","lname":"xyz"}
+2	{null:"c2"}	{"fname":"kajal","lname":"mapare"}
+Time taken: 1.239 seconds, Fetched: 2 row(s)
+hive> 
+    > 
+    > create EXTERNAL TABLE integartion_flight2(key INT,origin map<STRING,STRING>,customer map<STRING,STRING>)
+    > STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+    > WITH SERDEPROPERTIES("hbase.columns.mapping"=":key,origin:,customer:")
+    > TBLPROPERTIES("hbase.table.name"="flight");
+OK
+Time taken: 0.173 seconds
+hive> select * from integration_flight2;
+FAILED: SemanticException [Error 10001]: Line 1:14 Table not found 'integration_flight2'
+hive> select * from integartion_flight2;
+OK
+1	{"code":"c1","name":"mumbai"}	{"fname":"abc","lname":"xyz"}
+2	{"code":"c2"}	{"fname":"kajal","lname":"mapare"}
+Time taken: 0.17 seconds, Fetched: 2 row(s)
+
+hive> select customer["fname"] from integartion_flight2 where origin["code"]="c2";
+OK
+kajal
+Time taken: 0.385 seconds, Fetched: 1 row(s)
+
+5) Load hbase table data with Hive
+
+hbase(main):059:0> scan 'flight'
+ROW                                  COLUMN+CELL                                                                                               
+ 1                                   column=customer:fname, timestamp=1523695738909, value=abc                                                 
+ 1                                   column=customer:lname, timestamp=1523695744989, value=xyz                                                 
+ 1                                   column=dest:, timestamp=1523694892610, value=pune                                                         
+ 1                                   column=fno:, timestamp=1523694870609, value=f1                                                            
+ 1                                   column=origin:code, timestamp=1523694878219, value=c1                                                     
+ 1                                   column=origin:name, timestamp=1523694884852, value=mumbai                                                 
+ 2                                   column=customer:fname, timestamp=1523695722679, value=kajal                                               
+ 2                                   column=customer:lname, timestamp=1523695730154, value=mapare                                              
+ 2                                   column=date:, timestamp=1523695461615, value=1 jan 2018                                                   
+ 2                                   column=dest:, timestamp=1523695361684, value=banglore                                                     
+ 2                                   column=fno:, timestamp=1523694897959, value=f2                                                            
+ 2                                   column=origin:code, timestamp=1523694905108, value=c2                                                     
+2 row(s) in 0.0200 seconds
+
+
+
+
+
+hive> select * from integartion_flight2;
+OK
+1	{"code":"c1","name":"mumbai"}	{"fname":"abc","lname":"xyz"}
+2	{"code":"c2"}	{"fname":"kajal","lname":"mapare"}
+Time taken: 0.277 seconds, Fetched: 2 row(s)
+
+------------------------------------------------trial-----------------------------------------------------
+hive>  create EXTERNAL TABLE integration_flight7(key INT,origin STRING,customer STRING)
+    > STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+    > WITH SERDEPROPERTIES("hbase.columns.mapping" = ":key,origin:code,customer:fname")
+    > TBLPROPERTIES("hbase.table.name"="flight");
+OK
+Time taken: 0.191 seconds
+hive> select * from integration_flight7 ;
+OK
+1	c1	abc
+2	c2	kajal
+Time taken: 0.143 seconds, Fetched: 2 row(s)
+
+
+---------------------------------------------------------------------------------------------------------------
+
+6) insert new values and field in the table with Hive
+
+
+hive> create table hive_table00(key int,origin_code  string,customer_fnm string)row format delimited fields terminated by ',' 
+    > stored as textfile;
+OK
+Time taken: 0.173 seconds
+hive> load data local inpath "/home/lenovo/Desktop/emp.txt" into table hive_table00;
+Loading data to table default.hive_table00
+Table default.hive_table00 stats: [numFiles=1, totalSize=48]
+OK
+Time taken: 0.687 seconds
+hive> select * from hive_table00 ;
+OK
+NULL	2000	NULL
+NULL	3245	NULL
+NULL	5457	NULL
+NULL	5654	NULL
+Time taken: 0.239 seconds, Fetched: 4 row(s)
+
+7) Compute average flight delay 
+hbase(main):061:0> alter 'flight','flightdelay'
+Updating all regions with the new schema...
+0/1 regions updated.
+1/1 regions updated.
+Done.
+0 row(s) in 3.5910 seconds
+hbase(main):063:0> put 'flight','2','flightdelay:10','lmn'
+0 row(s) in 0.0190 seconds
+
+hbase(main):064:0> put 'flight','3','flightdelay:20','stu'
+0 row(s) in 0.0110 seconds
+
+hbase(main):065:0> scan 'flight'
+ROW                                  COLUMN+CELL                                                                                               
+ 1                                   column=customer:fname, timestamp=1523695738909, value=abc                                                 
+ 1                                   column=customer:lname, timestamp=1523695744989, value=xyz                                                 
+ 1                                   column=dest:, timestamp=1523694892610, value=pune                                                         
+ 1                                   column=fno:, timestamp=1523694870609, value=f1                                                            
+ 1                                   column=origin:code, timestamp=1523694878219, value=c1                                                     
+ 1                                   column=origin:name, timestamp=1523694884852, value=mumbai                                                 
+ 2                                   column=customer:fname, timestamp=1523695722679, value=kajal                                               
+ 2                                   column=customer:lname, timestamp=1523695730154, value=mapare                                              
+ 2                                   column=date:, timestamp=1523695461615, value=1 jan 2018                                                   
+ 2                                   column=dest:, timestamp=1523695361684, value=banglore                                                     
+ 2                                   column=flightdelay:10, timestamp=1523698962377, value=lmn                                                 
+ 2                                   column=fno:, timestamp=1523694897959, value=f2                                                            
+ 2                                   column=origin:code, timestamp=1523694905108, value=c2                                                     
+ 3                                   column=flightdelay:20, timestamp=1523698984237, value=stu                                                 
+3 row(s) in 0.0480 seconds
+
+hive> create EXTERNAL TABLE integration_flight8(key INT,flightdelay INT)
+    > STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+    > WITH SERDEPROPERTIES("hbase.columns.mapping"=":key,flightdelay:delay")
+    > TBLPROPERTIES("hbase.table.name"="flight");
+OK
+Time taken: 0.332 seconds
+hive> select * from integration_flight8 ;
+OK
+2	10
+3	30
+Time taken: 0.147 seconds, Fetched: 2 row(s)
+hive> select avg(delay) as average from integration_flight8 ;
+FAILED: SemanticException [Error 10004]: Line 1:11 Invalid table alias or column reference 'delay': (possible column names are: key, flightdelay)
+hive> select avg(flightdelay) as average from integration_flight8 ;
+Query ID = lenovo_20180414152433_6cb930e7-55ab-49f6-ba1c-393b6a7edd5a
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1523693878963_0001, Tracking URL = http://localhost:8088/proxy/application_1523693878963_0001/
+Kill Command = /usr/local/hadoop/bin/hadoop job  -kill job_1523693878963_0001
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+2018-04-14 15:25:00,975 Stage-1 map = 0%,  reduce = 0%
+2018-04-14 15:25:25,694 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 5.35 sec
+2018-04-14 15:25:50,610 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 8.15 sec
+MapReduce Total cumulative CPU time: 8 seconds 150 msec
+Ended Job = job_1523693878963_0001
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 8.15 sec   HDFS Read: 7486 HDFS Write: 5 SUCCESS
+Total MapReduce CPU Time Spent: 8 seconds 150 msec
+OK
+20.0
+Time taken: 80.751 seconds, Fetched: 1 row(s)
